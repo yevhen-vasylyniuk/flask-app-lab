@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<nav class="nav nav-pills justify-content-center gap-2 mb-4 sticky-top bg-body py-2">
+  <a class="nav-link" href="#about">Про себе</a>
+  <a class="nav-link" href="#education">Освіта</a>
+  <a class="nav-link" href="#skills">Навички</a>
+  <a class="nav-link" href="#technologies">Технології</a>
+  <a class="nav-link" href="#projects">Проєкти</a>
+</nav>
+
+<section id="about" class="row align-items-center mb-5">
+  <div class="col-md-4 text-center mb-3 mb-md-0">
+    <img src="{{ url_for('static', filename='images/photo.jpeg') }}"
+         alt="Фото"
+         class="img-fluid rounded profile-photo">
+  </div>
+  <div class="col-md-8">
+    <h1>Василинюк Євген</h1>
+    <p class="lead">Студент ІПЗ · Java / Python розробник</p>
+    <h2>Про себе</h2>
+    <p>
+      Студент спеціальності «Інженерія програмного забезпечення» в КНУіВС.
+      Розробляю на Java та Python, працюю з реляційними базами даних і вебтехнологіями.
+    </p>
+    <p>
+      Особливо цікавлюсь розвитком штучного інтелекту: машинним навчанням, великими
+      мовними моделями та тим, як ШІ-інструменти змінюють процес розробки. Прагну
+      поєднувати класичну інженерію програмного забезпечення із сучасними AI-підходами,
+      шукаю можливість застосувати знання на практиці та розвиватись у команді.
+    </p>
+  </div>
+</section>
+
+<section id="education" class="mb-5">
+  <h2>Освіта</h2>
+  <article>
+    <h3>КНУіВС</h3>
+    <p class="mb-1">Спеціальність «Інженерія програмного забезпечення», бакалавр</p>
+    <p class="text-muted">2024 – теперішній час</p>
+  </article>
+</section>
+
+<section id="skills" class="mb-5">
+  <h2>Навички</h2>
+  <dl class="row">
+    <dt class="col-sm-4">Мови програмування</dt>
+    <dd class="col-sm-8">Java, Python</dd>
+
+    <dt class="col-sm-4">Веб</dt>
+    <dd class="col-sm-8">HTML, CSS</dd>
+
+    <dt class="col-sm-4">Бази даних</dt>
+    <dd class="col-sm-8">PostgreSQL, MySQL</dd>
+
+    <dt class="col-sm-4">Інструменти</dt>
+    <dd class="col-sm-8">Git, GitHub</dd>
+
+    <dt class="col-sm-4">Мови</dt>
+    <dd class="col-sm-8">Українська (рідна), англійська (B1)</dd>
+  </dl>
+</section>
+
+<section id="technologies" class="mb-5">
+  <h2>Технології</h2>
+  <ul class="list-inline">
+    <li class="list-inline-item badge text-bg-primary">Java</li>
+    <li class="list-inline-item badge text-bg-primary">Python</li>
+    <li class="list-inline-item badge text-bg-success">Flask</li>
+    <li class="list-inline-item badge text-bg-success">Jinja2</li>
+    <li class="list-inline-item badge text-bg-warning">HTML</li>
+    <li class="list-inline-item badge text-bg-warning">CSS</li>
+    <li class="list-inline-item badge text-bg-warning">Bootstrap</li>
+    <li class="list-inline-item badge text-bg-info">PostgreSQL</li>
+    <li class="list-inline-item badge text-bg-info">MySQL</li>
+    <li class="list-inline-item badge text-bg-dark">Git</li>
+    <li class="list-inline-item badge text-bg-dark">GitHub</li>
+    <li class="list-inline-item badge text-bg-secondary">Render</li>
+  </ul>
+</section>
+
+<section id="projects" class="mb-5">
+  <h2>Досвід роботи та проєкти</h2>
+  <article class="mb-3">
+    <h3>Flask-застосунок «Резюме»</h3>
+    <p>
+      Вебзастосунок-портфоліо на Flask: шаблони Jinja2 з наслідуванням та include,
+      адаптивна верстка на Bootstrap, власні стилі. Розгорнутий на Render, код зберігається на GitHub.
+    </p>
+    <p class="mb-0"><strong>Стек:</strong> Python, Flask, Jinja2, HTML, CSS, Bootstrap, Gunicorn</p>
+  </article>
+</section>
+
+{% endblock %}
