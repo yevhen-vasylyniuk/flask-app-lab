@@ -84,6 +84,14 @@ section {
   font-size: 1.25rem;
 }
 
+/* Вхід (блюпринт users) */
+.login-card {
+  border: 1px solid #dee2e6;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+}
+
 @media (max-width: 576px) {
   h1 { font-size: 1.8rem; }
   .nav-pills { flex-wrap: wrap; }
