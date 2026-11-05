@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="text-center py-5">
+  <h1>Вітаю на моєму сайті!</h1>
+  <p class="lead">Навчальний Flask-застосунок: резюме, контакти та модулі на Blueprints.</p>
+  <div class="d-flex justify-content-center gap-2 mt-4">
+    <a class="btn btn-primary" href="{{ url_for('resume') }}">Резюме</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('contacts') }}">Контакти</a>
+  </div>
+</section>
+
+<section class="mx-auto" style="max-width: 600px;">
+  <h2>Ваш браузер</h2>
+  <p class="text-break text-muted border rounded p-3">{{ agent }}</p>
+</section>
+{% endblock %}

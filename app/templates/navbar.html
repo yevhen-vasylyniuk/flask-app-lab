@@ -9,6 +9,10 @@
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'home' %}active{% endif %}"
+             href="{{ url_for('home') }}">Головна</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'resume' %}active{% endif %}"
              href="{{ url_for('resume') }}">Резюме</a>
         </li>
