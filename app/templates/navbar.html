@@ -20,6 +20,10 @@
           <a class="nav-link {% if request.endpoint == 'contacts' %}active{% endif %}"
              href="{{ url_for('contacts') }}">Контакти</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.blueprint == 'products' %}active{% endif %}"
+             href="{{ url_for('products.get_products') }}">Товари</a>
+        </li>
       </ul>
     </div>
   </div>
