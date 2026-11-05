@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Вертикальне меню (тільки для цієї сторінки) -->
+  <aside class="col-md-3">
+    <nav class="side-menu">
+      <h2 class="side-menu-title">Користувачі</h2>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link {% if name == 'PETRO' %}active{% endif %}"
+             href="{{ url_for('users.greetings', name='Petro', age=30) }}">Greet Petro</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if name == 'ADMINISTRATOR' %}active{% endif %}"
+             href="{{ url_for('users.admin') }}">Admin</a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Основний вміст -->
+  <section class="col-md-9">
+    <div class="greeting-card">
+      <p class="greeting-hello">Hello :)</p>
+      <h1>User: {{ name }}</h1>
+      {% if age %}
+        <p class="greeting-age text-success">Age: {{ age }}</p>
+      {% else %}
+        <p class="greeting-age text-danger">Age: Not provided</p>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}
