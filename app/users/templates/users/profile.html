@@ -1,11 +1,71 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section>
+<section class="mb-4">
   <h1>Ласкаво просимо, {{ username }}!</h1>
-  <p class="text-muted">Тут ви можете переглянути інформацію та вийти з системи.</p>
+  <p class="text-muted">Тут ви можете керувати кукі та вийти з системи.</p>
   <form method="post" action="{{ url_for('users.logout') }}">
     <button type="submit" class="btn btn-danger">Вийти</button>
   </form>
+</section>
+
+<section class="mb-4">
+  <h2>Додати кукі</h2>
+  <form method="post" action="{{ url_for('users.add_cookie') }}" class="row g-3 align-items-end">
+    <div class="col-md-4">
+      <label for="key" class="form-label">Ключ</label>
+      <input type="text" class="form-control" id="key" name="key" required>
+    </div>
+    <div class="col-md-4">
+      <label for="value" class="form-label">Значення</label>
+      <input type="text" class="form-control" id="value" name="value">
+    </div>
+    <div class="col-md-2">
+      <label for="max_age" class="form-label">Термін дії (сек)</label>
+      <input type="number" class="form-control" id="max_age" name="max_age" min="1">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-success w-100">Додати</button>
+    </div>
+  </form>
+</section>
+
+<section class="mb-4">
+  <h2>Видалити кукі за ключем</h2>
+  <form method="post" action="{{ url_for('users.delete_cookie') }}" class="row g-3 align-items-end">
+    <div class="col-md-8">
+      <label for="delete_key" class="form-label">Ключ</label>
+      <input type="text" class="form-control" id="delete_key" name="key" required>
+    </div>
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-warning w-100">Видалити</button>
+    </div>
+  </form>
+</section>
+
+<section class="mb-4">
+  <h2>Видалити всі кукі</h2>
+  <form method="post" action="{{ url_for('users.delete_all_cookies') }}">
+    <button type="submit" class="btn btn-outline-danger">Видалити всі кукі</button>
+  </form>
+  <p class="form-text">Кукі сесії не видаляється, щоб вас не розлогінило.</p>
+</section>
+
+<section class="mb-4">
+  <h2>Поточні кукі</h2>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr><th>Ключ</th><th>Значення</th></tr>
+      </thead>
+      <tbody>
+        {% for key, value in cookies.items() %}
+          <tr><td>{{ key }}</td><td class="text-break">{{ value }}</td></tr>
+        {% else %}
+          <tr><td colspan="2" class="text-muted">Кукі немає</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </section>
 {% endblock %}
