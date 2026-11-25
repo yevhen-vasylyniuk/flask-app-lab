@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import String, Text, DateTime, Enum
+from sqlalchemy import String, Text, DateTime, Enum, Boolean, true
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app import db
@@ -23,6 +23,9 @@ class Post(db.Model):
     category: Mapped[str] = mapped_column(
         Enum(*CATEGORIES, name="post_category"), default="other"
     )
+    # server_default потрібен, щоб міграція заповнила значення для вже існуючих рядків
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default=true())
+    author: Mapped[str] = mapped_column(String(20), default="Anonymous", server_default="Anonymous")
 
     def __repr__(self):
         return f"<Post(title={self.title})>"
