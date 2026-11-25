@@ -28,11 +28,21 @@
           <a class="nav-link {% if request.blueprint == 'posts' %}active{% endif %}"
              href="{{ url_for('posts.get_posts') }}">Пости</a>
         </li>
+        {% if current_user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link {% if request.endpoint == 'users.profile' %}active{% endif %}"
-             href="{{ url_for('users.profile') }}">Профіль{% if session.username %} ({{ session.username }}){% endif %}</a>
+          <a class="nav-link {% if request.endpoint in ('users.account', 'users.profile', 'users.users_list') %}active{% endif %}"
+             href="{{ url_for('users.account') }}">Профіль ({{ current_user.username }})</a>
         </li>
-        {% if not session.username %}
+        <li class="nav-item">
+          <form method="post" action="{{ url_for('users.logout') }}" class="d-inline">
+            <button type="submit" class="nav-link btn btn-link">Вихід</button>
+          </form>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'users.register' %}active{% endif %}"
+             href="{{ url_for('users.register') }}">Реєстрація</a>
+        </li>
         <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'users.login' %}active{% endif %}"
              href="{{ url_for('users.login') }}">Вхід</a>

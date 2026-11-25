@@ -3,6 +3,7 @@ import os
 
 from flask import Flask, render_template
 from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
@@ -25,6 +26,11 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 migrate = Migrate()
 bcrypt = Bcrypt()
+login_manager = LoginManager()
+# Куди перенаправляти неавторизованих користувачів і з яким повідомленням
+login_manager.login_view = "users.login"
+login_manager.login_message = "Увійдіть, щоб переглянути цю сторінку."
+login_manager.login_message_category = "warning"
 
 
 def configure_contact_logger(app):
@@ -48,6 +54,7 @@ def create_app(config_name=None):
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
+    login_manager.init_app(app)
     configure_contact_logger(app)
 
     from .views import main_bp

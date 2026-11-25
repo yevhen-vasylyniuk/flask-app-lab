@@ -1,10 +1,10 @@
-from flask import render_template, redirect, url_for, flash, request, session
+from flask import render_template, redirect, url_for, flash, request
+from flask_login import current_user
 
 from app import db
 from . import post_bp
 from .forms import PostForm, ConfirmDeleteForm, CATEGORY_CHOICES
 from .models import Post, Tag
-from app.users.models import User
 
 
 @post_bp.context_processor
@@ -34,10 +34,9 @@ def get_posts():
 def create_post():
     form = PostForm()
     if request.method == "GET":
-        # За замовчуванням автор — користувач із сесії, якщо він є в БД
-        current = db.session.scalar(db.select(User).where(User.username == session.get("username")))
-        if current:
-            form.author_id.data = current.id
+        # За замовчуванням автор — користувач, який увійшов у систему
+        if current_user.is_authenticated:
+            form.author_id.data = current_user.id
 
     if form.validate_on_submit():
         post = Post()

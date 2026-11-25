@@ -65,9 +65,9 @@ class PostsTestCase(unittest.TestCase):
         db.session.commit()
         return user
 
-    def test_create_form_preselects_session_user(self):
+    def test_create_form_preselects_current_user(self):
         with self.client.session_transaction() as session:
-            session["username"] = "petro"
+            session["_user_id"] = str(self.other.id)  # так Flask-Login зберігає користувача
         response = self.client.get("/post/create")
         self.assertIn(f'<option selected value="{self.other.id}">petro</option>', response.get_data(as_text=True))
 

@@ -1,15 +1,16 @@
 from typing import TYPE_CHECKING
 
+from flask_login import UserMixin
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app import db, bcrypt
+from app import db, bcrypt, login_manager
 
 if TYPE_CHECKING:
     from app.posts.models import Post
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -28,3 +29,9 @@ class User(db.Model):
 
     def __repr__(self) -> str:
         return f"User({self.username!r})"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    # Flask-Login зберігає id у сесії як рядок
+    return db.session.get(User, int(user_id))
