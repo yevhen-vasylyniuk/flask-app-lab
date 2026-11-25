@@ -2,6 +2,7 @@ import logging
 import os
 
 from flask import Flask, render_template
+from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
@@ -23,6 +24,7 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 migrate = Migrate()
+bcrypt = Bcrypt()
 
 
 def configure_contact_logger(app):
@@ -45,6 +47,7 @@ def create_app(config_name=None):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    bcrypt.init_app(app)
     configure_contact_logger(app)
 
     from .views import main_bp

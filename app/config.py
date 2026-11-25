@@ -37,6 +37,7 @@ class TestingConfig(Config):
     """Тести: окрема in-memory SQLite, без CSRF."""
     TESTING = True
     WTF_CSRF_ENABLED = False
+    BCRYPT_LOG_ROUNDS = 4  # швидше хешування в тестах
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 
