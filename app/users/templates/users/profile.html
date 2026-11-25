@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block theme %}{{ theme }}{% endblock %}
+
 {% block content %}
 <section class="mb-4">
   <h1>Ласкаво просимо, {{ username }}!</h1>
@@ -7,6 +9,16 @@
   <form method="post" action="{{ url_for('users.logout') }}">
     <button type="submit" class="btn btn-danger">Вийти</button>
   </form>
+</section>
+
+<section class="mb-4">
+  <h2>Кольорова схема</h2>
+  <div class="btn-group" role="group" aria-label="Кольорова схема">
+    <a href="{{ url_for('users.set_theme', scheme='light') }}"
+       class="btn {% if theme == 'light' %}btn-primary{% else %}btn-outline-primary{% endif %}">☀️ Світла</a>
+    <a href="{{ url_for('users.set_theme', scheme='dark') }}"
+       class="btn {% if theme == 'dark' %}btn-primary{% else %}btn-outline-primary{% endif %}">🌙 Темна</a>
+  </div>
 </section>
 
 <section class="mb-4">

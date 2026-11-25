@@ -7,6 +7,12 @@ USERS = {
     "admin": "admin",
 }
 
+# Доступні кольорові схеми для сторінки профілю
+THEMES = {
+    "light": "Світла",
+    "dark": "Темна",
+}
+
 
 @user_bp.route("/hi/<string:name>")   # /users/hi/ivan?age=45
 def greetings(name):
@@ -47,8 +53,25 @@ def profile():
         flash("Спочатку увійдіть у систему!", "danger")
         return redirect(url_for("users.login"))
 
+    theme = request.cookies.get("theme", "light")
+    if theme not in THEMES:
+        theme = "light"
+
     return render_template("profile.html", title="Профіль", username=username,
-                           cookies=request.cookies)
+                           cookies=request.cookies, theme=theme)
+
+
+@user_bp.route("/theme/<string:scheme>")
+def set_theme(scheme):
+    response = redirect(url_for("users.profile"))
+    if scheme not in THEMES:
+        flash("Невідома кольорова схема.", "warning")
+        return response
+
+    # Зберігаємо вибір на рік, щоб він діяв і при наступних відвідуваннях
+    response.set_cookie("theme", scheme, max_age=60 * 60 * 24 * 365)
+    flash(f"Кольорову схему змінено на «{THEMES[scheme]}».", "success")
+    return response
 
 
 @user_bp.route("/logout", methods=["POST"])

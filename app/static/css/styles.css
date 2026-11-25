@@ -4,7 +4,15 @@
 
 body {
   font-family: "Segoe UI", system-ui, sans-serif;
-  color: #222;
+}
+
+/* Темна схема (вибирається на сторінці профілю) */
+[data-bs-theme="dark"] {
+  --accent: #63a4ff;
+}
+
+[data-bs-theme="dark"] body {
+  background: #121821;
 }
 
 h1, h2, h3 {
