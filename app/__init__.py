@@ -48,6 +48,9 @@ def create_app(config_name=None):
     from .products import products_bp
     app.register_blueprint(products_bp)
 
+    from .posts import post_bp
+    app.register_blueprint(post_bp)
+
     @app.errorhandler(404)
     def page_not_found(error):
         return render_template("404.html", title="Сторінку не знайдено"), 404
