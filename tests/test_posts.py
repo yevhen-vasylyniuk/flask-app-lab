@@ -14,6 +14,8 @@ class PostsTestCase(unittest.TestCase):
         self.ctx.push()
         db.create_all()
         self.client = self.app.test_client()
+        self.author = self.make_user("author")
+        self.other = self.make_user("petro")
 
     def tearDown(self):
         db.session.remove()
@@ -36,6 +38,7 @@ class PostsTestCase(unittest.TestCase):
             "enabled": "y",
             "publish_date": "2026-11-20T10:30",
             "category": "news",
+            "author_id": str(self.author.id),
         }
         data.update(overrides)
         return data
@@ -51,7 +54,7 @@ class PostsTestCase(unittest.TestCase):
         self.assertEqual(post.category, "news")
         self.assertEqual(post.posted, datetime(2026, 11, 20, 10, 30))
         self.assertTrue(post.is_active)
-        self.assertIsNone(post.user)
+        self.assertEqual(post.user, self.author)
 
         page = self.client.get(response.location).get_data(as_text=True)
         self.assertIn("Пост успішно додано", page)
@@ -62,12 +65,17 @@ class PostsTestCase(unittest.TestCase):
         db.session.commit()
         return user
 
-    def test_create_post_author_from_session(self):
-        self.make_user("user1")
+    def test_create_form_preselects_session_user(self):
         with self.client.session_transaction() as session:
-            session["username"] = "user1"
-        self.client.post("/post/create", data=self.form_data())
-        self.assertEqual(db.session.scalar(db.select(Post)).user.username, "user1")
+            session["username"] = "petro"
+        response = self.client.get("/post/create")
+        self.assertIn(f'<option selected value="{self.other.id}">petro</option>', response.get_data(as_text=True))
+
+    def test_create_post_with_selected_author(self):
+        self.client.post("/post/create", data=self.form_data(author_id=str(self.other.id)))
+        post = db.session.scalar(db.select(Post))
+        self.assertEqual(post.user.username, "petro")
+        self.assertIn(post, self.other.posts)
 
     def test_create_post_invalid(self):
         response = self.client.post("/post/create", data=self.form_data(title="", content=""))
@@ -78,8 +86,11 @@ class PostsTestCase(unittest.TestCase):
     def test_create_form_page(self):
         response = self.client.get("/post/create")
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'name="publish_date"', response.data)
-        self.assertNotIn(b'name="author"', response.data)
+        page = response.get_data(as_text=True)
+        self.assertIn('name="publish_date"', page)
+        self.assertIn('name="author_id"', page)  # список авторів з БД
+        self.assertIn(">author</option>", page)
+        self.assertIn(">petro</option>", page)
 
     # US02 — список постів
     def test_list_posts(self):
@@ -104,18 +115,19 @@ class PostsTestCase(unittest.TestCase):
 
     # US04 — редагування поста
     def test_update_form_prefilled(self):
-        post = self.make_post(title="Old title", posted=datetime(2026, 3, 5, 8, 15))
+        post = self.make_post(title="Old title", posted=datetime(2026, 3, 5, 8, 15), user=self.other)
         response = self.client.get(f"/post/{post.id}/update")
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'value="Old title"', response.data)
         self.assertIn(b'value="2026-03-05T08:15"', response.data)
+        self.assertIn(f'<option selected value="{self.other.id}">petro</option>'.encode(), response.data)
 
     def test_update_post(self):
-        author = self.make_user("user1")
-        post = self.make_post(title="Old title", user=author)
+        post = self.make_post(title="Old title", user=self.author)
         response = self.client.post(
             f"/post/{post.id}/update",
-            data=self.form_data(title="New title", category="other", enabled=""),
+            data=self.form_data(title="New title", category="other", enabled="",
+                                author_id=str(self.other.id)),
         )
         self.assertEqual(response.status_code, 302)
 
@@ -123,7 +135,7 @@ class PostsTestCase(unittest.TestCase):
         self.assertEqual(updated.title, "New title")
         self.assertEqual(updated.category, "other")
         self.assertFalse(updated.is_active)
-        self.assertEqual(updated.user, author)  # автор не змінюється
+        self.assertEqual(updated.user, self.other)  # автора змінено через список
 
     # US05 — видалення поста
     def test_delete_confirm_page(self):

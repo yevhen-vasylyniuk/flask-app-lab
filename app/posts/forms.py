@@ -5,6 +5,9 @@ from wtforms import StringField, TextAreaField, BooleanField, SelectField, Selec
 from wtforms.fields import DateTimeLocalField
 from wtforms.validators import DataRequired, Length
 
+from app import db
+from app.users.models import User
+
 CATEGORY_CHOICES = [
     ("news", "Новини"),
     ("publication", "Публікація"),
@@ -38,7 +41,14 @@ class PostForm(FlaskForm):
         choices=[SelectChoice(value, label) for value, label in CATEGORY_CHOICES],
         validators=[DataRequired(message="Оберіть категорію.")],
     )
+    author_id = SelectField("Автор", coerce=int, validators=[DataRequired(message="Оберіть автора.")])
     submit = SubmitField("Зберегти")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Список авторів завантажуємо з БД (синтаксис SQLAlchemy 2.0)
+        authors = db.session.scalars(db.select(User).order_by(User.id))
+        self.author_id.choices = [SelectChoice(user.id, user.username) for user in authors]
 
 
 class ConfirmDeleteForm(FlaskForm):

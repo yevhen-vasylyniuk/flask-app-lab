@@ -19,6 +19,7 @@
       <div class="col-sm-6">{{ render_field(form.publish_date) }}</div>
       <div class="col-sm-6">{{ render_field(form.category, input_class="form-select") }}</div>
     </div>
+    {{ render_field(form.author_id, input_class="form-select") }}
     <div class="form-check mb-3">
       {{ form.enabled(class="form-check-input") }}
       {{ form.enabled.label(class="form-check-label") }}

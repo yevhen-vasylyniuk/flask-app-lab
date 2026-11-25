@@ -12,6 +12,16 @@ def inject_categories():
     return {"category_names": dict(CATEGORY_CHOICES)}
 
 
+def fill_post(post, form):
+    """Переносить дані з форми в модель (назви полів форми і моделі відрізняються)."""
+    post.title = form.title.data
+    post.content = form.content.data
+    post.posted = form.publish_date.data
+    post.category = form.category.data
+    post.is_active = form.enabled.data
+    post.user_id = form.author_id.data
+
+
 @post_bp.route("")
 def get_posts():
     stmt = db.select(Post).where(Post.is_active).order_by(Post.posted.desc())
@@ -22,16 +32,15 @@ def get_posts():
 @post_bp.route("/create", methods=["GET", "POST"])
 def create_post():
     form = PostForm()
+    if request.method == "GET":
+        # За замовчуванням автор — користувач із сесії, якщо він є в БД
+        current = db.session.scalar(db.select(User).where(User.username == session.get("username")))
+        if current:
+            form.author_id.data = current.id
+
     if form.validate_on_submit():
-        post = Post(
-            title=form.title.data,
-            content=form.content.data,
-            posted=form.publish_date.data,
-            category=form.category.data,
-            is_active=form.enabled.data,
-            # Автор — користувач із сесії, якщо він є в БД
-            user=db.session.scalar(db.select(User).where(User.username == session.get("username"))),
-        )
+        post = Post()
+        fill_post(post, form)
         db.session.add(post)
         db.session.commit()
         flash("Пост успішно додано.", "success")
@@ -55,14 +64,13 @@ def update_post(id):
     form = PostForm(obj=post)
 
     if request.method == "GET":
-        # Назви полів форми і моделі різні, тому ці два поля заповнюємо вручну
+        # Назви полів форми і моделі різні, тому ці поля заповнюємо вручну
         form.publish_date.data = post.posted
         form.enabled.data = post.is_active
+        form.author_id.data = post.user_id
 
     if form.validate_on_submit():
-        form.populate_obj(post)
-        post.posted = form.publish_date.data
-        post.is_active = form.enabled.data
+        fill_post(post, form)
         db.session.commit()
         flash("Пост успішно оновлено.", "success")
         return redirect(url_for("posts.detail_post", id=post.id))
