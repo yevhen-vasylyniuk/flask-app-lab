@@ -21,6 +21,14 @@
 
   <div class="post-content mb-4">{{ post.content }}</div>
 
+  {% if post.tags %}
+    <div class="post-tags mb-4">
+      {% for tag in post.tags %}
+        <span class="post-tag">#{{ tag.name }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
   <div class="d-flex gap-2">
     <a class="btn btn-outline-primary" href="{{ url_for('posts.update_post', id=post.id) }}">Edit</a>
     <a class="btn btn-danger" href="{{ url_for('posts.delete_post', id=post.id) }}">Delete</a>

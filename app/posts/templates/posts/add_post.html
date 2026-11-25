@@ -20,6 +20,8 @@
       <div class="col-sm-6">{{ render_field(form.category, input_class="form-select") }}</div>
     </div>
     {{ render_field(form.author_id, input_class="form-select") }}
+    {{ render_field(form.tags, input_class="form-select") }}
+    <p class="form-text mt-n2">Утримуйте Ctrl (⌘ на Mac), щоб вибрати кілька тегів.</p>
     <div class="form-check mb-3">
       {{ form.enabled(class="form-check-input") }}
       {{ form.enabled.label(class="form-check-label") }}

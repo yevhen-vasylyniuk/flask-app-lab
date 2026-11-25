@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, flash, request, session
 from app import db
 from . import post_bp
 from .forms import PostForm, ConfirmDeleteForm, CATEGORY_CHOICES
-from .models import Post
+from .models import Post, Tag
 from app.users.models import User
 
 
@@ -20,6 +20,7 @@ def fill_post(post, form):
     post.category = form.category.data
     post.is_active = form.enabled.data
     post.user_id = form.author_id.data
+    post.tags = list(db.session.scalars(db.select(Tag).where(Tag.id.in_(form.tags.data or []))))
 
 
 @post_bp.route("")
@@ -68,6 +69,7 @@ def update_post(id):
         form.publish_date.data = post.posted
         form.enabled.data = post.is_active
         form.author_id.data = post.user_id
+        form.tags.data = [tag.id for tag in post.tags]
 
     if form.validate_on_submit():
         fill_post(post, form)

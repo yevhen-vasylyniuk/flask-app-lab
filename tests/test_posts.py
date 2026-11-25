@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 
 from app import create_app, db
-from app.posts.models import Post
+from app.posts.models import Post, Tag
 from app.users.models import User
 
 
@@ -151,6 +151,48 @@ class PostsTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Пост видалено", response.get_data(as_text=True))
         self.assertIsNone(db.session.get(Post, post.id))
+
+    # Теги (зв'язок «багато до багатьох»)
+    def make_tags(self, *names):
+        tags = [Tag(name=name) for name in names]
+        db.session.add_all(tags)
+        db.session.commit()
+        return tags
+
+    def test_create_post_with_tags(self):
+        flask_tag, python_tag, _ = self.make_tags("Flask", "Python", "Study")
+        self.client.post("/post/create", data=self.form_data(tags=[str(flask_tag.id), str(python_tag.id)]))
+        post = db.session.scalar(db.select(Post))
+        self.assertEqual({tag.name for tag in post.tags}, {"Flask", "Python"})
+        self.assertIn(post, flask_tag.posts)
+
+    def test_update_post_tags(self):
+        flask_tag, python_tag = self.make_tags("Flask", "Python")
+        post = self.make_post(user=self.author, tags=[flask_tag])
+
+        response = self.client.get(f"/post/{post.id}/update")
+        self.assertIn(f'<option selected value="{flask_tag.id}">Flask</option>', response.get_data(as_text=True))
+
+        self.client.post(f"/post/{post.id}/update", data=self.form_data(tags=[str(python_tag.id)]))
+        self.assertEqual([tag.name for tag in db.session.get(Post, post.id).tags], ["Python"])
+
+    def test_detail_shows_tags(self):
+        tags = self.make_tags("Flask", "Python")
+        post = self.make_post(tags=tags)
+        page = self.client.get(f"/post/{post.id}").get_data(as_text=True)
+        self.assertIn("#Flask", page)
+        self.assertIn("#Python", page)
+
+    def test_tag_shared_by_many_posts(self):
+        (tag,) = self.make_tags("Flask")
+        first = self.make_post(title="First", tags=[tag])
+        second = self.make_post(title="Second", tags=[tag])
+        self.assertEqual(set(tag.posts), {first, second})
+
+    def test_user_posts_relation(self):
+        post = self.make_post(user=self.other)
+        self.assertEqual(self.other.posts, [post])
+        self.assertEqual(self.author.posts, [])
 
     # US06 — 404
     def test_404_not_found(self):

@@ -1,12 +1,14 @@
 from datetime import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, SelectField, SelectChoice, SubmitField
+from wtforms import (StringField, TextAreaField, BooleanField, SelectField, SelectMultipleField,
+                     SelectChoice, SubmitField)
 from wtforms.fields import DateTimeLocalField
 from wtforms.validators import DataRequired, Length
 
 from app import db
 from app.users.models import User
+from .models import Tag
 
 CATEGORY_CHOICES = [
     ("news", "Новини"),
@@ -42,6 +44,7 @@ class PostForm(FlaskForm):
         validators=[DataRequired(message="Оберіть категорію.")],
     )
     author_id = SelectField("Автор", coerce=int, validators=[DataRequired(message="Оберіть автора.")])
+    tags = SelectMultipleField("Теги", coerce=int, render_kw={"size": 4})
     submit = SubmitField("Зберегти")
 
     def __init__(self, *args, **kwargs):
@@ -49,6 +52,8 @@ class PostForm(FlaskForm):
         # Список авторів завантажуємо з БД (синтаксис SQLAlchemy 2.0)
         authors = db.session.scalars(db.select(User).order_by(User.id))
         self.author_id.choices = [SelectChoice(user.id, user.username) for user in authors]
+        tags = db.session.scalars(db.select(Tag).order_by(Tag.name))
+        self.tags.choices = [SelectChoice(tag.id, tag.name) for tag in tags]
 
 
 class ConfirmDeleteForm(FlaskForm):
