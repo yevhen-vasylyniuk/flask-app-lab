@@ -12,6 +12,8 @@ class Config:
     """Базова конфігурація для всіх середовищ."""
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Журнал SQL-запитів вмикається змінною середовища: SQLALCHEMY_ECHO=1 flask shell
+    SQLALCHEMY_ECHO = os.environ.get("SQLALCHEMY_ECHO") == "1"
 
     # Лог-файл для повідомлень з контактної форми
     CONTACT_LOG = os.path.join(BASE_DIR, "logs", "contacts.log")
