@@ -22,7 +22,7 @@ SEED_PRODUCTS = [
         "quantity": 25,
     },
     {
-        "name": "PC",
+        "name": "Gaming PC",
         "content": "Настільний комп’ютер для ігор або роботи з графікою: RTX 4070, 32 ГБ RAM, 1 ТБ SSD.",
         "price": 1800.00,
         "category": "pc",
