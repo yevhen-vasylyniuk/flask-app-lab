@@ -7,4 +7,4 @@ products_bp = Blueprint("products",
                         static_folder="static"
                         )
 
-from . import views
+from . import views, models  # імпортує маршрути і моделі (для міграцій)
