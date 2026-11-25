@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block css %}
+  <link rel="stylesheet" href="{{ url_for('posts.static', filename='css/posts.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="mx-auto text-center delete-confirm" style="max-width: 560px;">
+  <div class="display-5 mb-3">🗑️</div>
+  <h1 class="h3">Видалити пост?</h1>
+  <p class="lead">«{{ post.title }}»</p>
+  <p class="text-muted">Цю дію не можна скасувати.</p>
+
+  <form method="post" class="d-flex justify-content-center gap-2">
+    {{ form.hidden_tag() }}
+    {{ form.submit(class="btn btn-danger") }}
+    <a class="btn btn-outline-secondary" href="{{ url_for('posts.detail_post', id=post.id) }}">Скасувати</a>
+  </form>
+</section>
+{% endblock %}

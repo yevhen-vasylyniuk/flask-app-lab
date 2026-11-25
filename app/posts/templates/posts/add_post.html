@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import render_field %}
+
+{% block css %}
+  <link rel="stylesheet" href="{{ url_for('posts.static', filename='css/posts.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="mx-auto" style="max-width: 700px;">
+  <a class="btn btn-link px-0 mb-3"
+     href="{{ url_for('posts.detail_post', id=post.id) if post else url_for('posts.get_posts') }}">&larr; Назад</a>
+  <h1 class="mb-4">{{ heading }}</h1>
+
+  <form method="post" class="login-card" novalidate>
+    {{ form.hidden_tag() }}
+    {{ render_field(form.title, placeholder="Заголовок поста") }}
+    {{ render_field(form.content, placeholder="Про що цей пост?") }}
+    <div class="row">
+      <div class="col-sm-6">{{ render_field(form.publish_date) }}</div>
+      <div class="col-sm-6">{{ render_field(form.category, input_class="form-select") }}</div>
+    </div>
+    <div class="form-check mb-3">
+      {{ form.enabled(class="form-check-input") }}
+      {{ form.enabled.label(class="form-check-label") }}
+    </div>
+    {{ form.submit(class="btn btn-primary w-100") }}
+  </form>
+</section>
+{% endblock %}

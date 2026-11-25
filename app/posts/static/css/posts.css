@@ -1,0 +1,45 @@
+/* Стилі блюпринта posts */
+.post-card {
+  border: none;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.post-img {
+  height: 160px;
+  object-fit: cover;
+}
+
+.post-badge {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.post-badge-news { background: #dc3545; }
+.post-badge-publication { background: #6f42c1; }
+.post-badge-tech { background: #0d6efd; }
+.post-badge-other { background: #6c757d; }
+
+.post-content {
+  white-space: pre-line;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.delete-confirm {
+  border: 1px solid #f1aeb5;
+  border-radius: 0.85rem;
+  padding: 2.5rem 1.5rem;
+  background: #fff5f5;
+}
+
+[data-bs-theme="dark"] .delete-confirm {
+  background: transparent;
+}
