@@ -5,25 +5,22 @@ import shutil
 import tempfile
 import unittest
 
-from app import app
+from app import create_app
 
 
 class ProductsCrudTestCase(unittest.TestCase):
     def setUp(self):
         """Окрема тимчасова TinyDB і папка для зображень на кожен тест."""
         self.tmp_dir = tempfile.mkdtemp()
-        self.old_config = {k: app.config.get(k) for k in ("PRODUCTS_DB", "UPLOAD_FOLDER", "WTF_CSRF_ENABLED")}
-        app.config.update(
-            TESTING=True,
-            WTF_CSRF_ENABLED=False,
+        self.app = create_app("testing")
+        self.app.config.update(
             PRODUCTS_DB=os.path.join(self.tmp_dir, "products.json"),
             UPLOAD_FOLDER=os.path.join(self.tmp_dir, "uploads"),
         )
-        self.client = app.test_client()
+        self.client = self.app.test_client()
         self.client.get("/product")  # ініціалізує сховище початковими товарами
 
     def tearDown(self):
-        app.config.update(self.old_config)
         shutil.rmtree(self.tmp_dir)
 
     def product_data(self, **overrides):
@@ -38,11 +35,11 @@ class ProductsCrudTestCase(unittest.TestCase):
         return data
 
     def stored_products(self):
-        with open(app.config["PRODUCTS_DB"], encoding="utf-8") as f:
+        with open(self.app.config["PRODUCTS_DB"], encoding="utf-8") as f:
             return json.load(f)["products"]
 
     def uploaded_files(self):
-        folder = app.config["UPLOAD_FOLDER"]
+        folder = self.app.config["UPLOAD_FOLDER"]
         return os.listdir(folder) if os.path.exists(folder) else []
 
     # --- Read ---

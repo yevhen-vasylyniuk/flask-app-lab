@@ -1,37 +1,32 @@
 import logging
-import os
 
-from flask import request, render_template, redirect, url_for, flash
-from . import app
+from flask import Blueprint, request, render_template, redirect, url_for, flash
 from .forms import ContactForm, SUBJECTS
 
-# Окремий логер, який дописує повідомлення з контактної форми у файл
-os.makedirs(os.path.dirname(app.config["CONTACT_LOG"]), exist_ok=True)
+main_bp = Blueprint("main", __name__)
+
+# Обробник у файл додається в create_app (configure_contact_logger)
 contact_logger = logging.getLogger("contact_form")
-contact_logger.setLevel(logging.INFO)
-_handler = logging.FileHandler(app.config["CONTACT_LOG"], encoding="utf-8")
-_handler.setFormatter(logging.Formatter("%(asctime)s | %(message)s"))
-contact_logger.addHandler(_handler)
 
 
-@app.route('/')
-def main():
+@main_bp.route('/')
+def index():
     return render_template('resume.html', title='Резюме')
 
 
-@app.route('/homepage')
+@main_bp.route('/homepage')
 def home():
     """View for the Home page of your website."""
     agent = request.user_agent
     return render_template('homepage.html', title='Головна', agent=agent)
 
 
-@app.route('/resume')
+@main_bp.route('/resume')
 def resume():
     return render_template('resume.html', title='Резюме')
 
 
-@app.route('/contacts', methods=['GET', 'POST'])
+@main_bp.route('/contacts', methods=['GET', 'POST'])
 def contacts():
     form = ContactForm()
     if form.validate_on_submit():
@@ -44,11 +39,11 @@ def contacts():
             )
         except OSError:
             flash("Не вдалося зберегти повідомлення. Спробуйте пізніше.", "danger")
-            return redirect(url_for('contacts'))
+            return redirect(url_for('main.contacts'))
 
         flash(f"Дякуємо, {form.name.data}! Повідомлення надіслано й збережено.", "success")
         # Post/Redirect/Get: після успішного POST перенаправляємо на GET
-        return redirect(url_for('contacts'))
+        return redirect(url_for('main.contacts'))
 
     if request.method == 'POST':
         flash("Повідомлення не надіслано. Виправте помилки у формі.", "danger")
