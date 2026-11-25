@@ -3,6 +3,7 @@ from datetime import datetime
 
 from app import create_app, db
 from app.posts.models import Post
+from app.users.models import User
 
 
 class PostsTestCase(unittest.TestCase):
@@ -50,16 +51,23 @@ class PostsTestCase(unittest.TestCase):
         self.assertEqual(post.category, "news")
         self.assertEqual(post.posted, datetime(2026, 11, 20, 10, 30))
         self.assertTrue(post.is_active)
-        self.assertEqual(post.author, "Anonymous")
+        self.assertIsNone(post.user)
 
         page = self.client.get(response.location).get_data(as_text=True)
         self.assertIn("Пост успішно додано", page)
 
+    def make_user(self, username="user1"):
+        user = User(username=username, email=f"{username}@example.com", password="hash")
+        db.session.add(user)
+        db.session.commit()
+        return user
+
     def test_create_post_author_from_session(self):
+        self.make_user("user1")
         with self.client.session_transaction() as session:
             session["username"] = "user1"
         self.client.post("/post/create", data=self.form_data())
-        self.assertEqual(db.session.scalar(db.select(Post)).author, "user1")
+        self.assertEqual(db.session.scalar(db.select(Post)).user.username, "user1")
 
     def test_create_post_invalid(self):
         response = self.client.post("/post/create", data=self.form_data(title="", content=""))
@@ -87,7 +95,7 @@ class PostsTestCase(unittest.TestCase):
 
     # US03 — перегляд поста
     def test_view_post_detail(self):
-        post = self.make_post(title="Detail post", content="Full content", author="user1")
+        post = self.make_post(title="Detail post", content="Full content", user=self.make_user("user1"))
         response = self.client.get(f"/post/{post.id}")
         page = response.get_data(as_text=True)
         self.assertEqual(response.status_code, 200)
@@ -103,7 +111,8 @@ class PostsTestCase(unittest.TestCase):
         self.assertIn(b'value="2026-03-05T08:15"', response.data)
 
     def test_update_post(self):
-        post = self.make_post(title="Old title", author="user1")
+        author = self.make_user("user1")
+        post = self.make_post(title="Old title", user=author)
         response = self.client.post(
             f"/post/{post.id}/update",
             data=self.form_data(title="New title", category="other", enabled=""),
@@ -114,7 +123,7 @@ class PostsTestCase(unittest.TestCase):
         self.assertEqual(updated.title, "New title")
         self.assertEqual(updated.category, "other")
         self.assertFalse(updated.is_active)
-        self.assertEqual(updated.author, "user1")  # автор не змінюється
+        self.assertEqual(updated.user, author)  # автор не змінюється
 
     # US05 — видалення поста
     def test_delete_confirm_page(self):

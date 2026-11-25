@@ -16,7 +16,7 @@
   </div>
   <h1>{{ post.title }}</h1>
   <p class="text-muted">
-    ✍ {{ post.author }} · 🕒 {{ post.posted.strftime("%d.%m.%Y %H:%M") }}
+    ✍ {{ post.user.username if post.user else 'Anonymous' }} · 🕒 {{ post.posted.strftime("%d.%m.%Y %H:%M") }}
   </p>
 
   <div class="post-content mb-4">{{ post.content }}</div>

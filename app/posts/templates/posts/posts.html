@@ -26,7 +26,7 @@
               {{ post.content[:100] }}{% if post.content | length > 100 %}…{% endif %}
             </p>
             <div class="mt-auto d-flex justify-content-between align-items-center">
-              <small class="text-muted">✍ {{ post.author }}</small>
+              <small class="text-muted">✍ {{ post.user.username if post.user else 'Anonymous' }}</small>
               <a class="btn btn-outline-primary btn-sm" href="{{ url_for('posts.detail_post', id=post.id) }}">Читати</a>
             </div>
           </div>

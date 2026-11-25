@@ -4,6 +4,7 @@ from app import db
 from . import post_bp
 from .forms import PostForm, ConfirmDeleteForm, CATEGORY_CHOICES
 from .models import Post
+from app.users.models import User
 
 
 @post_bp.context_processor
@@ -28,8 +29,8 @@ def create_post():
             posted=form.publish_date.data,
             category=form.category.data,
             is_active=form.enabled.data,
-            # Автор — користувач із сесії, інакше Anonymous
-            author=session.get("username", "Anonymous"),
+            # Автор — користувач із сесії, якщо він є в БД
+            user=db.session.scalar(db.select(User).where(User.username == session.get("username"))),
         )
         db.session.add(post)
         db.session.commit()
