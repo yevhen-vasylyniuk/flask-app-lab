@@ -1,14 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="mx-auto" style="max-width: 700px;">
+<section class="mx-auto" style="max-width: 800px;">
   <a class="btn btn-link px-0 mb-3" href="{{ url_for('products.get_products') }}">&larr; До списку товарів</a>
   <article class="card product-card">
-    <div class="card-body p-4">
-      <p class="text-muted mb-1">Товар #{{ product.id }}</p>
-      <h1 class="card-title">{{ product.name }}</h1>
-      <p class="card-text fs-5">{{ product.content }}</p>
-      <p class="product-price fs-3 mb-0">${{ product.price }}</p>
+    <div class="row g-0">
+      <div class="col-md-5">
+        {% if product.image_url %}
+          <img src="{{ product.image_url }}" class="img-fluid rounded-start product-detail-img" alt="{{ product.name }}">
+        {% else %}
+          <div class="product-detail-img product-img-empty rounded-start">Немає фото</div>
+        {% endif %}
+      </div>
+      <div class="col-md-7">
+        <div class="card-body p-4">
+          <p class="text-muted mb-1">Товар #{{ product.id }}</p>
+          <h1 class="card-title">{{ product.name }}</h1>
+          <span class="badge text-bg-secondary mb-3">
+            {{ category_names.get(product.category, product.category) }}
+          </span>
+          <p class="card-text">{{ product.content }}</p>
+          <ul class="list-unstyled small text-muted">
+            <li>В наявності: {{ product.quantity }} шт.</li>
+            <li>Додано: {{ product.created_at }}</li>
+          </ul>
+          <p class="product-price fs-3">${{ "%.2f"|format(product.price) }}</p>
+
+          <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary" href="{{ url_for('products.edit_product', id=product.id) }}">Редагувати</a>
+            <form method="post" action="{{ url_for('products.delete_product', id=product.id) }}"
+                  onsubmit='return confirm({{ ("Видалити товар «" ~ product.name ~ "»? Цю дію не можна скасувати.")|tojson }});'>
+              {{ delete_form.hidden_tag() }}
+              {{ delete_form.submit(class="btn btn-danger") }}
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </article>
 </section>
