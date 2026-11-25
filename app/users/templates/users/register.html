@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import render_field %}
+
+{% block content %}
+<section class="mx-auto" style="max-width: 460px;">
+  <h1 class="text-center mb-1">Реєстрація</h1>
+  <p class="text-center text-muted mb-4">Створіть акаунт, щоб писати пости від свого імені.</p>
+  <form method="post" class="login-card" novalidate>
+    {{ form.hidden_tag() }}
+    {{ render_field(form.username, placeholder="yevhen_v") }}
+    {{ render_field(form.email, placeholder="name@example.com") }}
+    {{ render_field(form.password, placeholder="Щонайменше 6 символів") }}
+    {{ render_field(form.confirm_password, placeholder="Повторіть пароль") }}
+    {{ form.submit(class="btn btn-success w-100") }}
+  </form>
+  <p class="text-center mt-3">Вже маєте акаунт? <a href="{{ url_for('users.login') }}">Увійти</a></p>
+</section>
+{% endblock %}

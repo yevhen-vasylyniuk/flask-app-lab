@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="mx-auto" style="max-width: 800px;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Користувачі</h1>
+    <span class="badge text-bg-primary fs-6">Усього: {{ users | length }}</span>
+  </div>
+
+  {% if users %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr><th>#</th><th>Ім'я користувача</th><th>Email</th><th>Постів</th></tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.posts | length }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">Зареєстрованих користувачів поки немає.</p>
+  {% endif %}
+</section>
+{% endblock %}

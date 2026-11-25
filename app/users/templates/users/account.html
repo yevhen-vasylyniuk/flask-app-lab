@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="mx-auto" style="max-width: 640px;">
+  <div class="login-card text-center">
+    <div class="account-avatar mx-auto mb-3">{{ user.username[0] | upper }}</div>
+    <h1 class="h3 mb-1">{{ user.username }}</h1>
+    <p class="text-muted">{{ user.email }}</p>
+
+    <ul class="list-group list-group-flush text-start my-4">
+      <li class="list-group-item d-flex justify-content-between">
+        <span>ID користувача</span><strong>{{ user.id }}</strong>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <span>Кількість постів</span><strong>{{ user.posts | length }}</strong>
+      </li>
+    </ul>
+
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+      <a class="btn btn-outline-primary" href="{{ url_for('posts.create_post') }}">Новий пост</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('users.profile') }}">Кукі й тема</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('users.users_list') }}">Усі користувачі</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,11 +1,9 @@
 from flask import request, redirect, url_for, render_template, flash, session
-from . import user_bp
 
-# Заглушка замість бази даних: логін -> пароль
-USERS = {
-    "user1": "1234",
-    "admin": "admin",
-}
+from app import db
+from . import user_bp
+from .forms import RegistrationForm, LoginForm
+from .models import User
 
 # Доступні кольорові схеми для сторінки профілю
 THEMES = {
@@ -29,21 +27,56 @@ def admin():
     return redirect(to_url)
 
 
-@user_bp.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username", "")
-        password = request.form.get("password", "")
-
-        if USERS.get(username) == password:
-            session["username"] = username
-            flash(f"Ви успішно увійшли як {username}!", "success")
-            return redirect(url_for("users.profile"))
-
-        flash("Невірний логін або пароль. Спробуйте ще раз!", "danger")
+@user_bp.route("/register", methods=["GET", "POST"])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            password=User.hash_password(form.password.data),
+        )
+        db.session.add(user)
+        db.session.commit()
+        flash(f"Акаунт {user.username} створено! Тепер можна увійти.", "success")
         return redirect(url_for("users.login"))
 
-    return render_template("login.html", title="Вхід")
+    if request.method == "POST":
+        flash("Реєстрацію не завершено. Виправте помилки у формі.", "danger")
+
+    return render_template("register.html", title="Реєстрація", form=form)
+
+
+@user_bp.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(db.select(User).where(User.email == form.email.data))
+        if user and user.check_password(form.password.data):
+            session["username"] = user.username
+            flash(f"Вітаємо, {user.username}! Вхід успішний.", "success")
+            return redirect(url_for("users.account"))
+
+        flash("Невірний email або пароль. Спробуйте ще раз!", "danger")
+        return redirect(url_for("users.login"))
+
+    return render_template("login.html", title="Вхід", form=form)
+
+
+@user_bp.route("/account")
+def account():
+    username = session.get("username")
+    user = db.session.scalar(db.select(User).where(User.username == username)) if username else None
+    if not user:
+        flash("Спочатку увійдіть у систему!", "danger")
+        return redirect(url_for("users.login"))
+    return render_template("account.html", title="Акаунт", user=user)
+
+
+@user_bp.route("/all")
+def users_list():
+    users = db.session.scalars(db.select(User).order_by(User.id)).all()
+    return render_template("users_list.html", title="Користувачі", users=users)
 
 
 @user_bp.route("/profile")
